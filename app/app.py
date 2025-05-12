@@ -58,7 +58,7 @@ if ticker:
             "Earnings Per Share (EPS)": info.get("trailingEps", "N/A")
         }
         for label, value in valuation.items():
-            st.markdown(f"**{label}:** {value}")
+            st.markdown(f"**{label}:** {round(value, 2) if isinstance(value, (int, float)) else value}")
 
     st.markdown("---")
 
@@ -77,16 +77,40 @@ if ticker:
         income_stmt, balance_sheet = get_financials(ticker)
 
         try:
-            net_income = income_stmt.loc["Net Income"].iloc[::-1]
-            revenue = income_stmt.loc["Total Revenue"].iloc[::-1]
-            assets = balance_sheet.loc["Total Assets"].iloc[::-1]
-            liabilities = balance_sheet.loc["Total Liab"].iloc[::-1]
+            
+    net_income = None
+    for label in ["Net Income", "Net Income Applicable To Common Shares", "NetIncome"]:
+        if label in income_stmt.index:
+            net_income = income_stmt.loc[label].iloc[::-1].round(2)
+            break
+    
+            
+    revenue = None
+    for label in ["Total Revenue", "Revenue", "TotalRevenue"]:
+        if label in income_stmt.index:
+            revenue = income_stmt.loc[label].iloc[::-1].round(2)
+            break
+    
+            
+    assets = None
+    for label in ["Total Assets", "Assets", "TotalAssets"]:
+        if label in balance_sheet.index:
+            assets = balance_sheet.loc[label].iloc[::-1].round(2)
+            break
+    
+            
+    liabilities = None
+    for label in ["Total Liab", "Liabilities", "TotalLiabilities"]:
+        if label in balance_sheet.index:
+            liabilities = balance_sheet.loc[label].iloc[::-1].round(2)
+            break
+    
 
             st.markdown("### 🧾 Income Overview")
-            st.line_chart(pd.DataFrame({"Revenue": revenue.round(2), "Net Income": net_income.round(2)}))
+            st.line_chart(pd.DataFrame({"Revenue": revenue, "Net Income": net_income}))
 
             st.markdown("### 🏦 Balance Sheet Overview")
-            st.bar_chart(pd.DataFrame({"Assets": assets.round(2), "Liabilities": liabilities.round(2)}))
+            st.bar_chart(pd.DataFrame({"Assets": assets, "Liabilities": liabilities}))
         except Exception as e:
             st.warning("Unable to load full financial highlights. Data may be incomplete.")
 
