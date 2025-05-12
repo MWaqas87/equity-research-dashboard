@@ -77,29 +77,29 @@ if ticker:
         income_stmt, balance_sheet = get_financials(ticker)
 
         try:
-            
-    net_income = None
+                    
+        net_income = None
     for label in ["Net Income", "Net Income Applicable To Common Shares", "NetIncome"]:
         if label in income_stmt.index:
             net_income = income_stmt.loc[label].iloc[::-1].round(2)
             break
     
             
-    revenue = None
+        revenue = None
     for label in ["Total Revenue", "Revenue", "TotalRevenue"]:
         if label in income_stmt.index:
             revenue = income_stmt.loc[label].iloc[::-1].round(2)
             break
     
             
-    assets = None
+        assets = None
     for label in ["Total Assets", "Assets", "TotalAssets"]:
         if label in balance_sheet.index:
             assets = balance_sheet.loc[label].iloc[::-1].round(2)
             break
     
             
-    liabilities = None
+        liabilities = None
     for label in ["Total Liab", "Liabilities", "TotalLiabilities"]:
         if label in balance_sheet.index:
             liabilities = balance_sheet.loc[label].iloc[::-1].round(2)
