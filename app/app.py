@@ -40,7 +40,7 @@ if ticker:
         company_info = get_company_info(ticker)
         st.markdown(f"**Company:** {company_info['name']}")
         st.markdown(f"**Sector:** {company_info['sector']}")
-        st.markdown(f"**Industry:
+        st.markdown(f"**Industry:** {company_info['industry']})
     try:
         net_income = None
         for label in ["Net Income", "Net Income Applicable To Common Shares", "NetIncome"]:
