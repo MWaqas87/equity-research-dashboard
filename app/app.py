@@ -90,23 +90,51 @@ if ticker:
                     break
 
             assets = None
-            for label in ["Total Assets", "Assets", "TotalAssets"]:
+            for label in ["Total Assets", "Assets", "TotalAssets", "Invested Capital"]:
                 if label in balance_sheet.index:
                     assets = balance_sheet.loc[label].iloc[::-1].round(2)
                     break
 
             liabilities = None
-            for label in ["Total Liab", "Liabilities", "TotalLiabilities"]:
+            for label in ["Total Liab", "Liabilities", "TotalLiabilities", "Total Debt"]:
                 if label in balance_sheet.index:
                     liabilities = balance_sheet.loc[label].iloc[::-1].round(2)
                     break
 
-            if revenue is not None and net_income is not None:
+            
+            # Determine scale
+            scale = 1
+            unit = ""
+            sample = revenue.dropna().iloc[0] if revenue is not None else None
+            if sample and abs(sample) >= 1e9:
+                scale = 1e9
+                unit = " (Billions USD)"
+            elif sample and abs(sample) >= 1e6:
+                scale = 1e6
+                unit = " (Millions USD)"
+            revenue = revenue / scale if revenue is not None else None
+            net_income = net_income / scale if net_income is not None else None
+            st.markdown("#### Revenue vs. Net Income" + unit)
+    
                 st.line_chart(pd.DataFrame({"Revenue": revenue, "Net Income": net_income}))
             else:
                 st.warning("Revenue or Net Income not available. Found rows: " + ", ".join(income_stmt.index[:10]))
 
-            if assets is not None and liabilities is not None:
+            
+            # Determine scale
+            scale_bs = 1
+            unit_bs = ""
+            sample_bs = assets.dropna().iloc[0] if assets is not None else None
+            if sample_bs and abs(sample_bs) >= 1e9:
+                scale_bs = 1e9
+                unit_bs = " (Billions USD)"
+            elif sample_bs and abs(sample_bs) >= 1e6:
+                scale_bs = 1e6
+                unit_bs = " (Millions USD)"
+            assets = assets / scale_bs if assets is not None else None
+            liabilities = liabilities / scale_bs if liabilities is not None else None
+            st.markdown(f"#### {assets.name} vs. {liabilities.name}" + unit_bs)
+    
                 st.bar_chart(pd.DataFrame({"Assets": assets, "Liabilities": liabilities}))
             else:
                 st.warning("Assets or Liabilities not available. Found rows: " + ", ".join(balance_sheet.index[:10]))
