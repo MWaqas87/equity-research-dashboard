@@ -77,11 +77,11 @@ if ticker:
         income_stmt, balance_sheet = get_financials(ticker)
 
         try:
-            net_income = None
-            for label in ["Net Income", "Net Income Applicable To Common Shares", "NetIncome"]:
-                if label in income_stmt.index:
-                    net_income = income_stmt.loc[label].iloc[::-1].round(2)
-                    break
+        net_income = None
+        for label in ["Net Income", "Net Income Applicable To Common Shares", "NetIncome"]:
+        if label in income_stmt.index:
+        net_income = income_stmt.loc[label].iloc[::-1].round(2)
+        break
 
             revenue = None
             for label in ["Total Revenue", "Revenue", "TotalRevenue"]:
@@ -142,7 +142,7 @@ if ticker:
         except Exception as e:
             st.warning("An error occurred while loading financial data.")
 
-            with tab3:
+    with tab3:
         st.subheader("📰 Latest News & Sentiment")
         news_items = get_news(ticker)
         for title, link, sentiment in news_items:
