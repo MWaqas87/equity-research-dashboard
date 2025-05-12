@@ -101,7 +101,7 @@ if ticker:
                     liabilities = balance_sheet.loc[label].iloc[::-1].round(2)
                     break
 
-            
+
             # Determine scale
             scale = 1
             unit = ""
@@ -115,12 +115,12 @@ if ticker:
             revenue = revenue / scale if revenue is not None else None
             net_income = net_income / scale if net_income is not None else None
                         st.markdown("#### Revenue vs. Net Income" + unit)
-    
+
                             st.line_chart(pd.DataFrame({"Revenue": revenue, "Net Income": net_income}))
             else:
                 st.warning("Revenue or Net Income not available. Found rows: " + ", ".join(income_stmt.index[:10]))
 
-            
+
             # Determine scale
             scale_bs = 1
             unit_bs = ""
@@ -134,7 +134,7 @@ if ticker:
             assets = assets / scale_bs if assets is not None else None
             liabilities = liabilities / scale_bs if liabilities is not None else None
                         st.markdown(f"#### {assets.name} vs. {liabilities.name}" + unit_bs)
-    
+
                             st.bar_chart(pd.DataFrame({"Assets": assets, "Liabilities": liabilities}))
             else:
                 st.warning("Assets or Liabilities not available. Found rows: " + ", ".join(balance_sheet.index[:10]))
