@@ -77,42 +77,42 @@ if ticker:
         income_stmt, balance_sheet = get_financials(ticker)
 
         try:
-                    
-        net_income = None
-    for label in ["Net Income", "Net Income Applicable To Common Shares", "NetIncome"]:
-        if label in income_stmt.index:
-            net_income = income_stmt.loc[label].iloc[::-1].round(2)
-            break
-    
-            
-        revenue = None
-    for label in ["Total Revenue", "Revenue", "TotalRevenue"]:
-        if label in income_stmt.index:
-            revenue = income_stmt.loc[label].iloc[::-1].round(2)
-            break
-    
-            
-        assets = None
-    for label in ["Total Assets", "Assets", "TotalAssets"]:
-        if label in balance_sheet.index:
-            assets = balance_sheet.loc[label].iloc[::-1].round(2)
-            break
-    
-            
-        liabilities = None
-    for label in ["Total Liab", "Liabilities", "TotalLiabilities"]:
-        if label in balance_sheet.index:
-            liabilities = balance_sheet.loc[label].iloc[::-1].round(2)
-            break
-    
+            net_income = None
+            for label in ["Net Income", "Net Income Applicable To Common Shares", "NetIncome"]:
+                if label in income_stmt.index:
+                    net_income = income_stmt.loc[label].iloc[::-1].round(2)
+                    break
 
-            st.markdown("### 🧾 Income Overview")
-            st.line_chart(pd.DataFrame({"Revenue": revenue, "Net Income": net_income}))
+            revenue = None
+            for label in ["Total Revenue", "Revenue", "TotalRevenue"]:
+                if label in income_stmt.index:
+                    revenue = income_stmt.loc[label].iloc[::-1].round(2)
+                    break
 
-            st.markdown("### 🏦 Balance Sheet Overview")
-            st.bar_chart(pd.DataFrame({"Assets": assets, "Liabilities": liabilities}))
+            assets = None
+            for label in ["Total Assets", "Assets", "TotalAssets"]:
+                if label in balance_sheet.index:
+                    assets = balance_sheet.loc[label].iloc[::-1].round(2)
+                    break
+
+            liabilities = None
+            for label in ["Total Liab", "Liabilities", "TotalLiabilities"]:
+                if label in balance_sheet.index:
+                    liabilities = balance_sheet.loc[label].iloc[::-1].round(2)
+                    break
+
+            if revenue is not None and net_income is not None:
+                st.line_chart(pd.DataFrame({"Revenue": revenue, "Net Income": net_income}))
+            else:
+                st.warning("Revenue or Net Income not available. Found rows: " + ", ".join(income_stmt.index[:10]))
+
+            if assets is not None and liabilities is not None:
+                st.bar_chart(pd.DataFrame({"Assets": assets, "Liabilities": liabilities}))
+            else:
+                st.warning("Assets or Liabilities not available. Found rows: " + ", ".join(balance_sheet.index[:10]))
+
         except Exception as e:
-            st.warning("Unable to load full financial highlights. Data may be incomplete.")
+            st.warning("An error occurred while loading financial data.")
 
     with tab3:
         st.subheader("📰 Latest News & Sentiment")
