@@ -114,9 +114,9 @@ if ticker:
                 unit = " (Millions USD)"
             revenue = revenue / scale if revenue is not None else None
             net_income = net_income / scale if net_income is not None else None
-            st.markdown("#### Revenue vs. Net Income" + unit)
+                        st.markdown("#### Revenue vs. Net Income" + unit)
     
-                st.line_chart(pd.DataFrame({"Revenue": revenue, "Net Income": net_income}))
+                            st.line_chart(pd.DataFrame({"Revenue": revenue, "Net Income": net_income}))
             else:
                 st.warning("Revenue or Net Income not available. Found rows: " + ", ".join(income_stmt.index[:10]))
 
@@ -133,9 +133,9 @@ if ticker:
                 unit_bs = " (Millions USD)"
             assets = assets / scale_bs if assets is not None else None
             liabilities = liabilities / scale_bs if liabilities is not None else None
-            st.markdown(f"#### {assets.name} vs. {liabilities.name}" + unit_bs)
+                        st.markdown(f"#### {assets.name} vs. {liabilities.name}" + unit_bs)
     
-                st.bar_chart(pd.DataFrame({"Assets": assets, "Liabilities": liabilities}))
+                            st.bar_chart(pd.DataFrame({"Assets": assets, "Liabilities": liabilities}))
             else:
                 st.warning("Assets or Liabilities not available. Found rows: " + ", ".join(balance_sheet.index[:10]))
 
