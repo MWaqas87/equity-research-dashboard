@@ -42,52 +42,52 @@ if ticker:
         st.markdown(f"**Sector:** {company_info['sector']}")
         st.markdown(f"**Industry:** {company_info['industry']}")
     try:
-        net_income = None
-        for label in ["Net Income", "Net Income Applicable To Common Shares", "NetIncome"]:
-            if label in income_stmt.index:
-                net_income = income_stmt.loc[label].iloc[::-1].round(2)
-                break
-
-        revenue = None
-        for label in ["Total Revenue", "Revenue", "TotalRevenue"]:
-            if label in income_stmt.index:
-                revenue = income_stmt.loc[label].iloc[::-1].round(2)
-                break
-
-        assets = None
-        for label in ["Total Assets", "Assets", "TotalAssets", "Invested Capital"]:
-            if label in balance_sheet.index:
-                assets = balance_sheet.loc[label].iloc[::-1].round(2)
-                break
-
-        liabilities = None
-        for label in ["Total Liab", "Liabilities", "TotalLiabilities", "Total Debt"]:
-            if label in balance_sheet.index:
-                liabilities = balance_sheet.loc[label].iloc[::-1].round(2)
-                break
-
-        if revenue is not None and net_income is not None:
-            sample = revenue.dropna().iloc[0]
-            scale = 1e9 if abs(sample) >= 1e9 else 1e6 if abs(sample) >= 1e6 else 1
-            unit = " (Billions USD)" if scale == 1e9 else " (Millions USD)" if scale == 1e6 else ""
-            revenue /= scale
-            net_income /= scale
-            st.markdown("#### Revenue vs. Net Income" + unit)
-            st.line_chart(pd.DataFrame({"Revenue": revenue, "Net Income": net_income}))
-        else:
-            st.warning("Revenue or Net Income not available. Found rows: " + ", ".join(income_stmt.index[:10]))
-
-        if assets is not None and liabilities is not None:
-            sample_bs = assets.dropna().iloc[0]
-            scale_bs = 1e9 if abs(sample_bs) >= 1e9 else 1e6 if abs(sample_bs) >= 1e6 else 1
-            unit_bs = " (Billions USD)" if scale_bs == 1e9 else " (Millions USD)" if scale_bs == 1e6 else ""
-            assets /= scale_bs
-            liabilities /= scale_bs
-            st.markdown(f"#### {assets.name} vs. {liabilities.name}" + unit_bs)
-            st.bar_chart(pd.DataFrame({"Assets": assets, "Liabilities": liabilities}))
-        else:
-            st.warning("Assets or Liabilities not available. Found rows: " + ", ".join(balance_sheet.index[:10]))
-
+    net_income = None
+    for label in ["Net Income", "Net Income Applicable To Common Shares", "NetIncome"]:
+    if label in income_stmt.index:
+    net_income = income_stmt.loc[label].iloc[::-1].round(2)
+    break
+    
+    revenue = None
+    for label in ["Total Revenue", "Revenue", "TotalRevenue"]:
+    if label in income_stmt.index:
+    revenue = income_stmt.loc[label].iloc[::-1].round(2)
+    break
+    
+    assets = None
+    for label in ["Total Assets", "Assets", "TotalAssets", "Invested Capital"]:
+    if label in balance_sheet.index:
+    assets = balance_sheet.loc[label].iloc[::-1].round(2)
+    break
+    
+    liabilities = None
+    for label in ["Total Liab", "Liabilities", "TotalLiabilities", "Total Debt"]:
+    if label in balance_sheet.index:
+    liabilities = balance_sheet.loc[label].iloc[::-1].round(2)
+    break
+    
+    if revenue is not None and net_income is not None:
+    sample = revenue.dropna().iloc[0]
+    scale = 1e9 if abs(sample) >= 1e9 else 1e6 if abs(sample) >= 1e6 else 1
+    unit = " (Billions USD)" if scale == 1e9 else " (Millions USD)" if scale == 1e6 else ""
+    revenue /= scale
+    net_income /= scale
+    st.markdown("#### Revenue vs. Net Income" + unit)
+    st.line_chart(pd.DataFrame({"Revenue": revenue, "Net Income": net_income}))
+    else:
+    st.warning("Revenue or Net Income not available. Found rows: " + ", ".join(income_stmt.index[:10]))
+    
+    if assets is not None and liabilities is not None:
+    sample_bs = assets.dropna().iloc[0]
+    scale_bs = 1e9 if abs(sample_bs) >= 1e9 else 1e6 if abs(sample_bs) >= 1e6 else 1
+    unit_bs = " (Billions USD)" if scale_bs == 1e9 else " (Millions USD)" if scale_bs == 1e6 else ""
+    assets /= scale_bs
+    liabilities /= scale_bs
+    st.markdown(f"#### {assets.name} vs. {liabilities.name}" + unit_bs)
+    st.bar_chart(pd.DataFrame({"Assets": assets, "Liabilities": liabilities}))
+    else:
+    st.warning("Assets or Liabilities not available. Found rows: " + ", ".join(balance_sheet.index[:10]))
+    
     except Exception as e:
         st.warning("An error occurred while loading financial data.")
  Exception as e:
