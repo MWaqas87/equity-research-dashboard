@@ -14,6 +14,23 @@ st.markdown("""<h1 style='text-align: center; color: #00adb5;'>📊 Equity Resea
 
 ticker = st.text_input("Enter Stock Ticker", "TSLA")
 
+def get_news(ticker):
+    url = f"https://finviz.com/quote.ashx?t={ticker}"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    r = requests.get(url, headers=headers)
+    soup = BeautifulSoup(r.text, "html.parser")
+    table = soup.find("table", class_="fullview-news-outer")
+    news = []
+    if table:
+        rows = table.find_all("tr")
+        for row in rows[:10]:
+            tds = row.find_all("td")
+            headline = tds[1].text.strip()
+            link = tds[1].a['href'] if tds[1].a else "#"
+            sentiment = TextBlob(headline).sentiment.polarity
+            news.append((headline, link, sentiment))
+    return news
+
 if ticker:
     st.markdown("---")
     col1, col2 = st.columns([1, 2])
@@ -33,14 +50,14 @@ if ticker:
         st.subheader("📉 Valuation Ratios")
         stock = yf.Ticker(ticker)
         info = stock.info
-        ratios = {
+        valuation = {
             "P/E Ratio": info.get("trailingPE", "N/A"),
             "Return on Equity (ROE)": info.get("returnOnEquity", "N/A"),
             "Return on Assets (ROA)": info.get("returnOnAssets", "N/A"),
             "Debt-to-Equity (D/E)": info.get("debtToEquity", "N/A"),
             "Earnings Per Share (EPS)": info.get("trailingEps", "N/A")
         }
-        for label, value in ratios.items():
+        for label, value in valuation.items():
             st.markdown(f"**{label}:** {value}")
 
     st.markdown("---")
@@ -56,33 +73,25 @@ if ticker:
         st.plotly_chart(fig, use_container_width=True)
 
     with tab2:
-        st.subheader("📊 Financial Statements")
+        st.subheader("📊 Financial Highlights")
         income_stmt, balance_sheet = get_financials(ticker)
-        st.markdown("**Income Statement (Top 5 Rows):**")
-        st.dataframe(income_stmt.head())
-        st.markdown("**Balance Sheet (Top 5 Rows):**")
-        st.dataframe(balance_sheet.head())
+
+        try:
+            net_income = income_stmt.loc["Net Income"].iloc[::-1]
+            revenue = income_stmt.loc["Total Revenue"].iloc[::-1]
+            assets = balance_sheet.loc["Total Assets"].iloc[::-1]
+            liabilities = balance_sheet.loc["Total Liab"].iloc[::-1]
+
+            st.markdown("### 🧾 Income Overview")
+            st.line_chart(pd.DataFrame({"Revenue": revenue.round(2), "Net Income": net_income.round(2)}))
+
+            st.markdown("### 🏦 Balance Sheet Overview")
+            st.bar_chart(pd.DataFrame({"Assets": assets.round(2), "Liabilities": liabilities.round(2)}))
+        except Exception as e:
+            st.warning("Unable to load full financial highlights. Data may be incomplete.")
 
     with tab3:
         st.subheader("📰 Latest News & Sentiment")
-
-        def get_news(ticker):
-            url = f"https://finviz.com/quote.ashx?t={ticker}"
-            headers = {"User-Agent": "Mozilla/5.0"}
-            r = requests.get(url, headers=headers)
-            soup = BeautifulSoup(r.text, "html.parser")
-            table = soup.find("table", class_="fullview-news-outer")
-            news = []
-            if table:
-                rows = table.find_all("tr")
-                for row in rows[:10]:  # limit to 10 headlines
-                    tds = row.find_all("td")
-                    headline = tds[1].text.strip()
-                    link = tds[1].a['href']
-                    sentiment = TextBlob(headline).sentiment.polarity
-                    news.append((headline, link, sentiment))
-            return news
-
         news_items = get_news(ticker)
         for title, link, sentiment in news_items:
             label = "🟢 Positive" if sentiment > 0.1 else "🔴 Negative" if sentiment < -0.1 else "⚪ Neutral"
